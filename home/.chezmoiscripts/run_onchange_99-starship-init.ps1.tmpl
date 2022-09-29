@@ -1,0 +1,21 @@
+{{- if lookPath "starship" -}}
+#!/usr/bin/env pwsh
+
+# starship version output hash: [{{- output "starship" "--version" | trim | sha256sum -}}]
+
+Write-Host 'starship has been updated, updating prompt...'
+
+$starship = & starship init powershell --print-full-init
+
+if ([string]::IsNullOrWhiteSpace($starship)) {
+    Write-Host 'starship init was not successful, skipping...'
+    exit
+}
+
+if (Get-Command -Name 'pwsh' -CommandType 'Application' -ErrorAction 'SilentlyContinue') {
+    $starship | Out-File -FilePath (Join-Path -Path "${env:USERPROFILE}/Documents/PowerShell" -ChildPath 'starship.ps1') -Force
+}
+if (Get-Command -Name 'powershell' -CommandType 'Application' -ErrorAction 'SilentlyContinue') {
+    $starship | Out-File -FilePath (Join-Path -Path "${env:USERPROFILE}/Documents/WindowsPowerShell" -ChildPath 'starship.ps1') -Force
+}
+{{- end }}

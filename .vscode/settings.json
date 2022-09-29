@@ -1,5 +1,8 @@
 {
   "[json][jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    "*.ps1.tmpl": "powershell"
   }
 }

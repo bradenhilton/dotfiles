@@ -1,0 +1,11 @@
+$OutputEncoding = [System.Text.UTF8Encoding]::new()
+
+function winget-upgrade {
+    foreach ($arg in $args) {
+        if (-not [string]::IsNullOrWhitespace($arg)) {
+            & winget upgrade "${arg}"
+        }
+    }
+}
+
+{{ template "powershell/profile.ps1" . }}
