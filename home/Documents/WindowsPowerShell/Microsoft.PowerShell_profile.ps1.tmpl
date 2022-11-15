@@ -1,11 +1,8 @@
+# chezmoi:template:left-delimiter=#{{
 $OutputEncoding = [System.Text.UTF8Encoding]::new()
 
-function winget-upgrade {
-    foreach ($arg in $args) {
-        if (-not [string]::IsNullOrWhitespace($arg)) {
-            & winget upgrade "${arg}"
-        }
-    }
-}
+#{{ range $_, $func := list "install" "uninstall" "upgrade" -}}
+#{{ template "powershell/winget.ps1" $func }}
+#{{ end }}
 
-{{ template "powershell/profile.ps1" . }}
+#{{- template "powershell/profile.ps1" . -}}

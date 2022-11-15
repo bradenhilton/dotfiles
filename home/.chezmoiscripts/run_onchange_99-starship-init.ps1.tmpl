@@ -1,21 +1,32 @@
-{{- if lookPath "starship" -}}
+# chezmoi:template:left-delimiter=#{{
+#{{- if lookPath "starship" -}}
 #!/usr/bin/env pwsh
 
-# starship version output hash: [{{- output "starship" "--version" | trim | sha256sum -}}]
+# starship version output hash: [#{{- output "starship" "--version" | trim | sha256sum -}}]
 
-Write-Host 'starship has been updated, updating prompt...'
+function Set-StarshipInit {
+    param ([System.IO.DirectoryInfo]$Directory, $Value)
 
-$starship = & starship init powershell --print-full-init
+    New-Item -Path $Directory -Name 'starship.ps1' -ItemType 'File' -Value ($Value | Out-String) -Force | Out-Null
+}
 
-if ([string]::IsNullOrWhiteSpace($starship)) {
-    Write-Host 'starship init was not successful, skipping...'
+Write-Output 'Regenerating starship init...'
+
+$starshipInit = & starship init powershell --print-full-init
+
+if ([string]::IsNullOrWhiteSpace($starshipInit)) {
+    Write-Output 'starship init was not successful, skipping...'
     exit
 }
 
 if (Get-Command -Name 'pwsh' -CommandType 'Application' -ErrorAction 'SilentlyContinue') {
-    $starship | Out-File -FilePath (Join-Path -Path "${env:USERPROFILE}/Documents/PowerShell" -ChildPath 'starship.ps1') -Force
+    #{{ if eq .chezmoi.os "windows" -}}
+    Set-StarshipInit -Directory "${env:USERPROFILE}\Documents\PowerShell" -Value $starshipInit
+    #{{- else -}}
+    Set-StarshipInit -Directory "${env:USERPROFILE}/.config/powershell" -Value $starshipInit
+    #{{- end }}
 }
 if (Get-Command -Name 'powershell' -CommandType 'Application' -ErrorAction 'SilentlyContinue') {
-    $starship | Out-File -FilePath (Join-Path -Path "${env:USERPROFILE}/Documents/WindowsPowerShell" -ChildPath 'starship.ps1') -Force
+    Set-StarshipInit -Directory "${env:USERPROFILE}\Documents\WindowsPowerShell" -Value $starshipInit
 }
-{{- end }}
+#{{- end }}
