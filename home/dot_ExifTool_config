@@ -1,0 +1,3 @@
+%Image::ExifTool::UserDefined::Shortcuts = (
+    AllComments => ['Comment', 'EXIF:UserComment', 'EXIF:XPComment', 'XMP-exif:UserComment']
+)
