@@ -3,6 +3,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "files.associations": {
-    "*.ps1.tmpl": "powershell"
+    "**/.chezmoitemplates/**/*.{conf,ini,json,toml,ya?ml}": "gotmpl",
+    "*.ps1.tmpl": "powershell",
+    "*.{bat,cmd}.tmpl": "bat",
+    "*.sh.tmpl": "shellscript",
+    "**/*Code/**/*settings.json": "jsonc"
   }
 }
