@@ -1,14 +1,19 @@
 {{ if ne .chezmoi.os "darwin" -}}
+Library/
 Library/**
 {{- end }}
 
 {{ if ne .chezmoi.os "linux" -}}
+.config/Code/
 .config/Code/**
 {{- end }}
 
 {{ if ne .chezmoi.os "windows" -}}
+AppData/
 AppData/**
+Documents/*PowerShell/
 Documents/*PowerShell/**
 {{- else -}}
+.config/powershell/
 .config/powershell/**
 {{- end }}
