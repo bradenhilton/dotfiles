@@ -9,6 +9,8 @@ Library/**
 {{- end }}
 
 {{ if ne .chezmoi.os "windows" -}}
+.chezmoiscripts/windows
+.chezmoiscripts/windows/**
 AppData/
 AppData/**
 Documents/*PowerShell/
