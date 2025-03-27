@@ -70,5 +70,8 @@ if (Test-IsInteractive) {
         }
     } | ForEach-Object { Set-PSReadLineOption @_ }
 
-    . (Join-Path -Path (Split-Path -Path $PROFILE) -ChildPath 'starship.ps1')
+    $currentErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    . (Join-Path -Path (Split-Path -LiteralPath $PROFILE) -ChildPath 'starship-init.ps1')
+    $ErrorActionPreference = $currentErrorActionPreference
 }

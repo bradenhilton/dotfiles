@@ -1,0 +1,5 @@
+# chezmoi:template:left-delimiter=#{{
+
+#{{- if lookPath "starship" -}}
+#{{-   includeTemplate "powershell/starship-init.ps1" | trim }}
+#{{- end }}
