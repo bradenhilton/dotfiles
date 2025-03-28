@@ -5,13 +5,13 @@
 ::{{- if $tweaks -}}
 @echo off
 
-echo "Applying Registry tweaks (user)..."
+echo Applying Registry tweaks (user)...
 ::{{   range $tweaks -}}
 ::{{     $command := printf `reg import "%s"` . }}
 echo ::{{ $command }}
 ::{{     $command }}
 ::{{   end }}
-echo "Applying Registry tweaks (user)... Done"
+echo Applying Registry tweaks (user)... Done
 
 EXIT
 ::{{- end -}}
