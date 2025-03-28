@@ -6,5 +6,5 @@ args = ["-NoLogo"]
 
 [interpreters.ps1]
 command = "powershell"
-args = ["-NoLogo", "-File"]
+args = ["-NoLogo", "-ExecutionPolicy", "RemoteSigned", "-File"]
 {{- end }}
