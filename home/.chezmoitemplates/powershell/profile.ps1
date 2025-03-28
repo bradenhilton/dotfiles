@@ -1,25 +1,19 @@
-function Test-IsInteractive {
-    $nonInteractiveParameters = @(
-        '-c*', # -Command
-        '-e*', # -EncodedCommand
-        '-f*', # -File
-        '-noni*' # -NonInteractive
-    )
+$PSDefaultParameterValues['*:Encoding'] = 'utf8'
+$OutputEncoding = [System.Text.UTF8Encoding]::new()
 
+function Test-IsInteractive {
     $commandLineArgs = [System.Environment]::GetCommandLineArgs()
 
-    # True if VS Code shell integration is sourced: . "...\Microsoft VS Code\...\shellIntegration.ps1"
-    # This is done in the integrated terminal
-    if ($commandLineArgs -match '\.\s*\u0022.*vs\s*code.*shellIntegration\.ps1\u0022') {
-        return $true
-    }
+    foreach ($arg in $commandLineArgs) {
+        # False if the command line arguments contain any non-interactive parameters
+        if ($arg -imatch '-noni(?:n(?:t(?:e(?:r(?:a(?:c(?:t(?:i(?:v(?:e)?)?)?)?)?)?)?)?)?)?') {
+            return $false
+        }
 
-    # False if the command line arguments contain any non-interactive parameters
-    foreach ($arg in ($commandLineArgs | Where-Object { $_ -match '^-' })) {
-        foreach ($param in $nonInteractiveParameters) {
-            if ($arg -like $param) {
-                return $false
-            }
+        # True if VS Code shell integration is sourced: . "...\Microsoft VS Code\...\shellIntegration.ps1"
+        # This is done in the integrated terminal
+        if ($arg -match '\.\s*\u0022.*vs\s*code.*shellIntegration\.ps1\u0022') {
+            return $true
         }
     }
 
@@ -27,23 +21,12 @@ function Test-IsInteractive {
 }
 
 if (Test-IsInteractive) {
-    $AddCommandToHistory = {
+    $addCommandToHistory = {
         param (
-            [string]
-            $Command
+            [string]$Command
         )
 
         switch ($Command) {
-            (
-                {
-                    ($_ -match '^cd[ ]+.+') -or
-                    ($_ -match '^chdir[ ]+.+') -or
-                    ($_ -match '^sl[ ]+.+') -or
-                    ($_ -match '^[sS]et-[lL]ocation[ ]+.+')
-                }
-            ) {
-                return $false
-            }
             (
                 {
                     ($_ -contains '--help') -or
@@ -58,17 +41,14 @@ if (Test-IsInteractive) {
             default { return $true }
         }
     }
-
-    Import-Module -Name PSReadLine
+    Import-Module -Name PSReadLine -ErrorAction SilentlyContinue
     @{
         EditMode            = 'Windows'
-        PredictionSource    = 'History'
         HistoryNoDuplicates = $true
-        AddToHistoryHandler = $AddCommandToHistory
-        Colors              = @{
-            InlinePrediction = [System.ConsoleColor]::DarkGray
-        }
-    } | ForEach-Object { Set-PSReadLineOption @_ }
+        AddToHistoryHandler = $addCommandToHistory
+    } | ForEach-Object { Set-PSReadLineOption @_ -ErrorAction SilentlyContinue }
+
+    Import-Module -Name 'posh-git' -ErrorAction SilentlyContinue
 
     $currentErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = 'SilentlyContinue'
