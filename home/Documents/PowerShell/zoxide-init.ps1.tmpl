@@ -1,0 +1,5 @@
+# chezmoi:template:left-delimiter=#{{
+
+#{{- if lookPath "zoxide" -}}
+#{{-   includeTemplate "powershell/zoxide-init.ps1" | trim }}
+#{{- end }}

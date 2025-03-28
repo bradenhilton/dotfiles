@@ -53,5 +53,6 @@ if (Test-IsInteractive) {
     $currentErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = 'SilentlyContinue'
     . (Join-Path -Path (Split-Path -LiteralPath $PROFILE) -ChildPath 'starship-init.ps1')
+    . (Join-Path -Path (Split-Path -LiteralPath $PROFILE) -ChildPath 'zoxide-init.ps1')
     $ErrorActionPreference = $currentErrorActionPreference
 }
