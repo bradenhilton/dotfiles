@@ -1,0 +1,66 @@
+:: chezmoi:template:left-delimiter=::{{
+
+::{{- $packages := list
+    "ajeetdsouza.zoxide"
+    "Anki.Anki"
+    "AntibodySoftware.WizTree"
+    "Armin2208.WindowsAutoNightMode"
+    "astral-sh.uv"
+    "Audacity.Audacity"
+    "Bitwarden.Bitwarden"
+    "Bitwarden.CLI"
+    "Brave.Brave"
+    "BurntSushi.ripgrep.MSVC"
+    "ca.duan.tre-command"
+    "dandavison.delta"
+    "Discord.Discord"
+    "Docker.DockerDesktop"
+    "DupeGuru.DupeGuru"
+    "easymodo.qimgv"
+    "eza-community.eza"
+    "GIMP.GIMP.3"
+    "Git.Git"
+    "GitHub.cli"
+    "GoLang.Go"
+    "jftuga.less"
+    "LLVM.clangd"
+    "M2Team.NanaZip"
+    "MediaArea.MediaInfo.GUI"
+    "MediaArea.MediaInfo"
+    "MHNexus.HxD"
+    "Microsoft.PowerShell"
+    "Microsoft.PowerToys"
+    "Microsoft.VisualStudioCode"
+    "Microsoft.WSL"
+    "Mozilla.Firefox"
+    "Mozilla.Thunderbird"
+    "MusicBrainz.Picard"
+    "namazso.OpenHashTab"
+    "NVIDIA.ICAT"
+    "Obsidian.Obsidian"
+    "OpenJS.NodeJS.LTS"
+    "REALiX.HWiNFO"
+    "Rustlang.Rust.MSVC"
+    "sharkdp.bat"
+    "sharkdp.fd"
+    "Starship.Starship"
+    "StefansTools.SKTimeStamp"
+    "twpayne.chezmoi"
+    "WiresharkFoundation.Wireshark"
+    "Xanashi.Icaros"
+-}}
+
+::{{- $pins := list
+    "Discord.Discord"
+-}}
+
+@echo off
+echo Installing WinGet packages...
+cmd /c winget install --exact ::{{ $packages | join " " }} --silent --accept-package-agreements --accept-source-agreements --no-upgrade
+echo Installing Winget packages... Done
+
+echo Pinning WinGet packages...
+::{{ range $pins -}}
+cmd /c winget pin add --exact ::{{ . }}
+::{{ end }}
+echo Pinning WinGet packages... Done

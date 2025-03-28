@@ -1,0 +1,81 @@
+# chezmoi:template:left-delimiter=#{{
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+
+if (-not (Get-Command 'scoop' -CommandType Application -ErrorAction SilentlyContinue)) {
+    Invoke-RestMethod -Uri 'https://get.scoop.sh' | Invoke-Expression
+    $env:Path = @([System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine), [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)) -join ';'
+}
+
+class Bucket {
+    [string]$Name
+    [string]$Url
+
+    Bucket([string]$Name) {
+        $this.Name = $Name
+        $this.Url = $null
+    }
+
+    Bucket([string]$Name, [string]$Url) {
+        $this.Name = $Name
+        $this.Url = $Url
+    }
+}
+
+class Package {
+    [string]$Name
+    [Bucket]$Bucket
+
+    Package([string]$Name, [Bucket]$Bucket) {
+        $this.Name = $Name
+        $this.Bucket = $Bucket
+    }
+}
+
+$buckets = [pscustomobject]@{
+    main         = [Bucket]::new('main')
+    extras       = [Bucket]::new('extras')
+    goreleaser   = [Bucket]::new('goreleaser', 'https://github.com/goreleaser/scoop-bucket.git')
+    'nerd-fonts' = [Bucket]::new('nerd-fonts')
+}
+
+$currentBuckets = & scoop bucket list 6<$null | Select-Object -ExpandProperty Name
+
+$buckets.PSObject.Properties | ForEach-Object {
+    $bucket = $_.Value
+
+    if ($currentBuckets -notcontains $bucket.Name) {
+        if ($bucket.Url) {
+            & scoop bucket add $bucket.Name $bucket.Url
+        } else {
+            & scoop bucket add $bucket.Name
+        }
+    }
+}
+
+$mainPackages = @(
+    'aria2'
+    'atomicparsley'
+    'exiftool'
+    'ffmpeg'
+    'imagemagick'
+) | ForEach-Object { [Package]::new($_, $buckets.main) }
+
+$extrasPackages = @(
+    'mpv-git'
+    'rsgain'
+    'rufus'
+) | ForEach-Object { [Package]::new($_, $buckets.extras) }
+
+$goReleaserPackage = [Package]::new('goreleaser', $buckets.goreleaser)
+
+$nerdFontsPackages = @(
+    'FiraCode'
+) | ForEach-Object { [Package]::new($_, $buckets.'nerd-fonts') }
+
+$packages = ($mainPackages + $extrasPackages + $goReleaserPackage + $nerdFontsPackages)
+
+Write-Output 'Installing Scoop packages...'
+
+& scoop install @($packages | ForEach-Object { "$($_.Bucket.Name)/$($_.Name)" })
+
+Write-Output 'Installing Scoop packages... Done'
