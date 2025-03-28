@@ -53,7 +53,6 @@ $buckets.PSObject.Properties | ForEach-Object {
 }
 
 $mainPackages = @(
-    'aria2'
     'atomicparsley'
     'exiftool'
     'ffmpeg'
@@ -75,6 +74,10 @@ $nerdFontsPackages = @(
 $packages = ($mainPackages + $extrasPackages + $goReleaserPackage + $nerdFontsPackages)
 
 Write-Output 'Installing Scoop packages...'
+
+& scoop install 'main/aria2c'
+
+& scoop config aria2-enabled $false
 
 & scoop install @($packages | ForEach-Object { "$($_.Bucket.Name)/$($_.Name)" })
 
