@@ -1,21 +1,26 @@
-{{ if ne .chezmoi.os "darwin" -}}
+{{ if ne "darwin" .chezmoi.os }}
 Library/
 Library/**
 {{- end }}
 
-{{ if ne .chezmoi.os "linux" -}}
+{{ if ne "linux" .chezmoi.os }}
 .config/Code/
 .config/Code/**
 {{- end }}
 
-{{ if ne .chezmoi.os "windows" -}}
+{{ if ne "windows" .chezmoi.os }}
 .chezmoiscripts/windows
 .chezmoiscripts/windows/**
 AppData/
 AppData/**
 Documents/*PowerShell/
 Documents/*PowerShell/**
-{{- else -}}
+{{   if not (lookPath "pwsh") }}
+**/*.ps1
 .config/powershell/
 .config/powershell/**
-{{- end }}
+{{   end }}
+{{ else }}
+.config/powershell/
+.config/powershell/**
+{{ end }}
