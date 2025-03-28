@@ -1,6 +1,7 @@
 :: chezmoi:template:left-delimiter=::{{
 
-::{{- $tweaks := (glob (joinPath .chezmoi.sourceDir ".chezmoiscripts" "windows" ".reg" "user" "**/*.reg")) -}}
+::{{- $tweaksDir := joinPath .chezmoi.sourceDir ".chezmoiscripts" "windows" ".reg" "user" -}}
+::{{- $tweaks := glob (joinPath $tweaksDir "**/*.reg") -}}
 
 ::{{- if $tweaks -}}
 @echo off
@@ -8,7 +9,7 @@
 echo Applying Registry tweaks (user)...
 ::{{   range $tweaks -}}
 ::{{     $command := printf `reg import "%s"` . }}
-echo ::{{ $command }}
+echo ::{{ $command | replace ($tweaksDir | replace `\` "/") "..." }}
 ::{{     $command }}
 ::{{   end }}
 echo Applying Registry tweaks (user)... Done

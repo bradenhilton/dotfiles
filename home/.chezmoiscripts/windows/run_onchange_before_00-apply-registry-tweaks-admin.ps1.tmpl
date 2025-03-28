@@ -1,6 +1,7 @@
 # chezmoi:template:left-delimiter=#{{
 
-#{{- $tweaks := (glob (joinPath .chezmoi.sourceDir ".chezmoiscripts" "windows" ".reg" "admin" "**/*.reg")) -}}
+#{{- $tweaksDir := joinPath .chezmoi.sourceDir ".chezmoiscripts" "windows" ".reg" "admin" -}}
+#{{- $tweaks := glob (joinPath $tweaksDir "**/*.reg") -}}
 
 #{{- if $tweaks -}}
 #{{-   includeTemplate "powershell/self-elevate.ps1" }}
@@ -9,7 +10,7 @@ if ($isElevated) {
     try {
         #{{- range $tweaks -}}
         #{{   $command := printf `reg import "%s"` . }}
-        Write-Output '#{{ $command }}'
+        Write-Output '#{{ $command | replace ($tweaksDir | replace `\` "/") "..." }}'
         #{{   $command }}
         #{{ end -}}
         exit 0
