@@ -1,0 +1,32 @@
+# chezmoi:template:left-delimiter=#{{
+
+#{{- $tweaks := (glob (joinPath .chezmoi.sourceDir ".chezmoiscripts" "windows" ".reg" "admin" "**/*.reg")) -}}
+
+#{{- if $tweaks -}}
+#{{-   includeTemplate "powershell/self-elevate.ps1" }}
+
+if ($isElevated) {
+    try {
+        #{{- range $tweaks -}}
+        #{{   $command := printf `reg import "%s"` . }}
+        Write-Output '#{{ $command }}'
+        #{{   $command }}
+        #{{ end -}}
+        exit 0
+    } catch {
+        exit 1
+    }
+} else {
+    Write-Output 'Applying Registry tweaks (admin)...'
+
+    Invoke-Elevated -Path $MyInvocation.MyCommand.Path
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Output "Installation failed with exit code ${LASTEXITCODE}"
+        exit $LASTEXITCODE
+    }
+
+    Write-Output 'Applying Registry tweaks (admin)...Done'
+    exit 0
+}
+#{{- end -}}
