@@ -1,0 +1,4 @@
+["themes"]
+type = "file"
+url = "https://raw.githubusercontent.com/dandavison/delta/main/themes.gitconfig"
+refreshPeriod = "168h"

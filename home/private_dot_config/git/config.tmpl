@@ -1,0 +1,46 @@
+[user]
+	name = {{ .git.name }}
+	email = {{ .git.email }}
+[credential]
+	helper = manager
+[core]
+	autocrlf = false
+	pager = delta
+[push]
+	autoSetupRemote = true
+[init]
+	defaultBranch = main
+[interactive]
+	diffFilter = delta --color-only
+[merge]
+	conflictstyle = diff3
+[diff]
+	relative = true
+	colorMoved = default
+	wsErrorHighlight = all
+{{- with $themesPath := joinPath .chezmoi.homeDir ".config" "git" "themes" -}}
+{{   if (stat $themesPath) }}
+[include]
+	path = {{ $themesPath | replace `\` "/" }}
+{{   end -}}
+{{ end -}}
+[delta]
+	features = my-delta-style
+	navigate = true
+	side-by-side = true
+	paging = always
+	file-transformation = "s,{{- .chezmoi.homeDir -}},~/,"
+	file-added-label = [+]
+	file-copied-label = [==]
+	file-modified-label = [*]
+	file-removed-label = [-]
+	file-renamed-label = [->]
+[delta "my-delta-style"]
+		dark = true
+	syntax-theme = TwoDark
+	zero-style = syntax dim
+	file-style = bold dim
+	file-decoration-style = dim ol
+	hunk-header-style = omit
+	line-numbers-left-style = dim
+	line-numbers-right-style = dim
