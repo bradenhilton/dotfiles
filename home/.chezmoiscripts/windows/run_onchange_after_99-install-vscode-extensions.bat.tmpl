@@ -1,0 +1,12 @@
+:: chezmoi:template:left-delimiter=::{{
+
+::{{- if lookPath "code" -}}
+::{{- $extensions := includeTemplate "vscode/extensions" . | trim | splitList "\n" -}}
+@echo off
+
+echo Installing VS Code extensions...
+
+cmd /c code ::{{ range $extensions }}--install-extension ::{{. | quote}} ::{{ end }}
+
+echo Installing VS Code extensions... Done
+::{{- end -}}
