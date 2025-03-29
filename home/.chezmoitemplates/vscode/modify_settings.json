@@ -1,0 +1,47 @@
+{{- /* chezmoi:template:line-ending=lf */ -}}
+{{- $settings := . | fromJson -}}
+
+{{- $modifiedSettings := merge dict (dict
+    "[javascript][javascriptreact][typescript][typescriptreact]" (dict
+        "editor.codeActionsOnSave" (dict
+            "source.fixAll" "explicit"
+        )
+        "editor.defaultFormatter" "esbenp.prettier-vscode"
+    )
+    "[json][jsonc]" (dict
+        "editor.defaultFormatter" "esbenp.prettier-vscode"
+    )
+    "[python]" (dict
+        "editor.defaultFormatter" "charliermarsh.ruff"
+    )
+    "editor.bracketPairColorization.enabled" true
+    "editor.cursorSmoothCaretAnimation" "on"
+    "editor.fontFamily" "'Fira Code', FiraCode, 'Fira Code Regular', FiraCode-Regular, 'Fira Code Retina', FiraCode-Retina, Consolas, Menlo, Monaco, 'Courier New', monospace"
+    "editor.formatOnSave" true
+    "editor.guides.bracketPairs" "active"
+    "editor.linkedEditing" true
+    "editor.renderWhitespace" "boundary"
+    "editor.smoothScrolling" true
+    "editor.stickyScroll.enabled" true
+    "errorLens.messageTemplate" "◼ $message"
+    "go.toolsManagement.autoUpdate" true
+    "javascript.preferences.importModuleSpecifier" "non-relative"
+    "javascript.updateImportsOnFileMove.enabled" "always"
+    "powershell.codeFormatting.autoCorrectAliases" true
+    "powershell.codeFormatting.avoidSemicolonsAsLineTerminators" true
+    "powershell.codeFormatting.pipelineIndentationStyle" "IncreaseIndentationForFirstPipeline"
+    "powershell.codeFormatting.preset" "OTBS"
+    "powershell.codeFormatting.trimWhitespaceAroundPipe" true
+    "powershell.codeFormatting.useConstantStrings" true
+    "powershell.codeFormatting.useCorrectCasing" true
+    "powershell.pester.useLegacyCodeLens" false
+    "python.testing.pytestEnabled" true
+    "python.testing.unittestEnabled" true
+    "telemetry.telemetryLevel" "off"
+    "typescript.preferences.importModuleSpecifier" "non-relative"
+    "typescript.updateImportsOnFileMove.enabled" "always"
+    "workbench.colorTheme" "One Dark Pro Darker"
+    "workbench.iconTheme" "material-icon-theme"
+) $settings -}}
+
+{{- $modifiedSettings | toPrettyJson }}

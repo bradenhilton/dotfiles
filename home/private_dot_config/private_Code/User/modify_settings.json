@@ -1,0 +1,5 @@
+// chezmoi:modify-template
+// chezmoi:template:line-ending=lf
+// chezmoi:template:left-delimiter=//{{
+
+//{{- includeTemplate "vscode/modify_settings.json" .chezmoi.stdin | trim }}
