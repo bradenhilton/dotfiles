@@ -1,10 +1,53 @@
-{{ if eq .chezmoi.os "windows" -}}
-# Windows settings
-[cd]
-command = "powershell"
-args = ["-NoLogo"]
+{{- $gitName := promptStringOnce . "git.name" "Enter name for Git" -}}
+{{- $gitEmail := promptStringOnce . "git.email" "Enter email for Git" -}}
 
-[interpreters.ps1]
-command = "powershell"
-args = ["-NoLogo", "-ExecutionPolicy", "RemoteSigned", "-File"]
-{{- end }}
+{{- $cd := dict -}}
+{{- $data := (dict
+      "git" (dict
+        "name" $gitName
+        "email" $gitEmail
+      )
+    )
+-}}
+{{- $diff := dict -}}
+{{- $interpreters := dict -}}
+{{- $hooks := dict -}}
+
+{{- if eq .chezmoi.os "windows" -}}
+{{-   $cd = (dict
+        "command" "powershell"
+        "args" (list
+          "-NoLogo"
+        )
+      )
+-}}
+{{-   $interpreters = (dict
+        "ps1" (dict
+          "command" "powershell"
+          "args" (list
+            "-NoLogo"
+            "-ExecutionPolicy"
+            "RemoteSigned"
+            "-File"
+          )
+        )
+      )
+-}}
+{{- end -}}
+
+{{- if lookPath "delta" -}}
+{{-   $diff = (dict
+        "pager" "delta"
+      )
+-}}
+{{- end -}}
+
+{{- $config := dict
+  "cd" $cd
+  "data" $data
+  "diff" $diff
+  "interpreters" $interpreters
+  "hooks" $hooks
+-}}
+
+{{- $config | pruneEmptyDicts | toToml | trim }}
