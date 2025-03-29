@@ -6,6 +6,8 @@ Library/**
 {{ if ne "linux" .chezmoi.os }}
 .config/Code/
 .config/Code/**
+.mozilla/
+.mozilla/**
 {{- end }}
 
 {{ if ne "windows" .chezmoi.os }}

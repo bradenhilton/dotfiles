@@ -1,0 +1,48 @@
+{{- $installPath := "" -}}
+{{- if eq "windows" .chezmoi.os -}}
+{{-   $installPath = (output "powershell.exe" "-NoProfile" "-NonInteractive" "-Command" `Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Mozilla\Mozilla Firefox\*\Main" -Name "Install Directory"` | trim) -}}
+{{- else if eq "darwin" .chezmoi.os -}}
+{{-   $installPath = "/Applications/Firefox.app/Contents/MacOS" -}}
+{{- else if eq "linux" .chezmoi.os -}}
+{{-   if stat "/usr/lib64/firefox" -}}
+{{-     $installPath = "/usr/lib64/firefox" -}}
+{{-   else -}}
+{{-     $installPath = "/usr/lib/firefox" -}}
+{{-   end -}}
+{{- end -}}
+
+{{- $profile := (dict
+      "Name"       "default-release"
+      "Path"       "default-release"
+      "IsRelative" (int true)
+      "Default"    (int true)
+    )
+-}}
+
+{{- /* Prepend "Profiles/" to relative profile paths when not on Linux */ -}}
+{{- if ne "linux" .chezmoi.os -}}
+{{-   if and ($profile.IsRelative) (not (hasPrefix "Profiles/" $profile.Path)) -}}
+{{-     $_ := set $profile "Path" (printf "Profiles/%s" $profile.Path) -}}
+{{-   end -}}
+{{- end -}}
+
+{{ $install := (dict
+     "_hash" (mozillaInstallHash $installPath)
+     "Default" $profile.Path
+     "Locked" (int true)
+   )
+}}
+
+{{- /*
+It isn't possible to directly export data from one template and import it in another.
+The data will need to be roundtripped in an appropriate format such as JSON.
+
+`toPrettyJson` is used here.
+`$data := includeTemplate ... | fromJson` will be used in templates that consume the data.
+`$data.install` will contain the install and `$data.profile` will contain the profile.
+*/ -}}
+{{- dict
+      "profile" $profile
+      "install" $install
+    | toPrettyJson
+-}}
